@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Trình Duyệt Vui Vui</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --text: #222;
+      --input-bg: #fff;
+      --input-border: #dbeafe;
+      --btn-bg: #2563eb;
+      --btn-hover: #1d4ed8;
+      --footer: #888;
+      --logo1: #2563eb;
+      --logo2: #ea4335;
+      --logo3: #fbbc05;
+      --logo4: #22c55e;
+      --card-shadow: 0 4px 24px 0 #2563eb22;
+      --card-radius: 18px;
+    }
+    body.dark {
+      --bg: #181818;
+      --text: #eee;
+      --input-bg: #232323;
+      --input-border: #444;
+      --btn-bg: #222;
+      --btn-hover: #444;
+      --footer: #aaa;
+      --card-shadow: 0 4px 24px 0 #0006;
+    }
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      color: var(--text);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      transition: background 0.3s, color 0.3s;
+      min-height: 100vh;
+    }
+    .logo {
+      font-size: 54px;
+      font-weight: bold;
+      margin-top: 48px;
+      margin-bottom: 18px;
+      letter-spacing: 2px;
+      font-family: 'Product Sans', 'Segoe UI', Arial, sans-serif;
+      user-select: none;
+      text-shadow: 0 2px 8px #2563eb22;
+    }
+    .logo span { transition: color 0.3s; }
+    .logo span:nth-child(1) { color: var(--logo1);}
+    .logo span:nth-child(2) { color: var(--logo2);}
+    .logo span:nth-child(3) { color: var(--logo3);}
+    .logo span:nth-child(4) { color: var(--logo4);}
+    .logo span:nth-child(5) { color: var(--logo1);}
+    .logo span:nth-child(6) { color: var(--logo2);}
+    .logo span:nth-child(7) { color: var(--logo3);}
+    .logo span:nth-child(8) { color: var(--logo4);}
+    .logo span:nth-child(9) { color: var(--logo1);}
+    .logo span:nth-child(10) { color: var(--logo2);}
+    .logo span:nth-child(11) { color: var(--logo3);}
+    .logo span:nth-child(12) { color: var(--logo4);}
+    .logo span:nth-child(13) { color: var(--logo1);}
+    .logo span:nth-child(14) { color: var(--logo2);}
+    .logo span:nth-child(15) { color: var(--logo3);}
+    .logo span:nth-child(16) { color: var(--logo4);}
+    .search-box {
+      margin: 0 auto;
+      width: 100%;
+      max-width: 520px;
+      position: relative;
+      background: var(--input-bg);
+      border-radius: var(--card-radius);
+      box-shadow: var(--card-shadow);
+      padding: 18px 0 10px 0;
+      margin-bottom: 12px;
+    }
+    .search-input {
+      width: 80%;
+      padding: 16px 20px;
+      font-size: 20px;
+      border: 1.5px solid var(--input-border);
+      border-radius: 28px;
+      outline: none;
+      box-sizing: border-box;
+      margin-bottom: 10px;
+      background: var(--input-bg);
+      color: var(--text);
+      transition: box-shadow 0.2s, background 0.3s, color 0.3s, border 0.2s;
+    }
+    .search-input:focus {
+      box-shadow: 0 2px 12px #2563eb22;
+      border-color: var(--btn-bg);
+    }
+    .search-btn, .lucky-btn {
+      padding: 12px 22px;
+      font-size: 17px;
+      border: none;
+      border-radius: 28px;
+      background: var(--btn-bg);
+      color: #fff;
+      cursor: pointer;
+      margin: 8px 6px;
+      transition: background 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 8px #2563eb22;
+      font-weight: 500;
+    }
+    .search-btn:hover, .lucky-btn:hover {
+      background: var(--btn-hover);
+      box-shadow: 0 4px 16px #2563eb33;
+    }
+    .toggle-dark {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--btn-bg);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 22px;
+      cursor: pointer;
+      transition: background 0.2s;
+      box-shadow: 0 2px 8px #2563eb22;
+    }
+    .toggle-dark:hover {
+      background: var(--btn-hover);
+    }
+    .suggestions, .history-list {
+      position: absolute;
+      left: 10%;
+      width: 80%;
+      background: var(--input-bg);
+      color: var(--text);
+      border: 1px solid var(--input-border);
+      border-radius: 0 0 18px 18px;
+      box-shadow: 0 4px 16px #2563eb22;
+      z-index: 10;
+      text-align: left;
+      max-height: 200px;
+      overflow-y: auto;
+      font-size: 17px;
+      display: none;
+    }
+    .suggestions.active, .history-list.active {
+      display: block;
+    }
+    .suggestions div, .history-list div {
+      padding: 10px 18px;
+      cursor: pointer;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .suggestions div:last-child, .history-list div:last-child {
+      border-bottom: none;
+    }
+    .suggestions div:hover, .history-list div:hover {
+      background: #e0e7ff;
+      color: #222;
+    }
+    .dark .suggestions div:hover, .dark .history-list div:hover {
+      background: #333;
+      color: #fff;
+    }
+    .footer {
+      position: fixed;
+      bottom: 10px;
+      width: 100%;
+      color: var(--footer);
+      font-size: 15px;
+      z-index: 1;
+      letter-spacing: 1px;
+    }
+    .message {
+      margin: 18px auto 10px auto;
+      font-size: 20px;
+      font-style: italic;
+      color: #2563eb;
+      max-width: 90vw;
+      min-height: 24px;
+      text-shadow: 0 1px 6px #2563eb11;
+    }
+    .options {
+      margin: 10px auto 0 auto;
+      max-width: 520px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      background: var(--input-bg);
+      border-radius: var(--card-radius);
+      box-shadow: var(--card-shadow);
+      padding: 10px 0 6px 0;
+    }
+    .option-checkbox {
+      accent-color: #2563eb;
+      margin-right: 4px;
+    }
+    .ai-answer {
+      margin: 10px auto;
+      max-width: 520px;
+      background: #e0e7ff;
+      color: #222;
+      border-radius: 14px;
+      padding: 12px 20px;
+      font-size: 17px;
+      display: none;
+      box-shadow: var(--card-shadow);
+      text-align: left;
+    }
+    .dark .ai-answer {
+      background: #232323;
+      color: #eee;
+    }
+    .ai-chat {
+      margin: 24px 0 0 24px;
+      max-width: 350px;
+      min-width: 260px;
+      background: #f9f9f9;
+      border-radius: var(--card-radius);
+      box-shadow: var(--card-shadow);
+      padding: 10px 0 0 0;
+      min-height: 120px;
+      position: fixed;
+      top: 120px;
+      left: 0;
+      z-index: 20;
+      text-align: left;
+      border: 1.5px solid #dbeafe;
+    }
+    .dark .ai-chat {
+      background: #232323;
+      border: 1.5px solid #333;
+    }
+    .ai-chat-history {
+      max-height: 220px;
+      overflow-y: auto;
+      padding: 0 18px 8px 18px;
+      text-align: left;
+      font-size: 16px;
+      min-height: 60px;
+    }
+    .ai-chat-msg {
+      margin: 8px 0;
+      line-height: 1.6;
+      border-radius: 8px;
+      padding: 4px 8px;
+    }
+    .ai-chat-msg.user {
+      color: #2563eb;
+      font-weight: bold;
+      background: #e0e7ff;
+      display: inline-block;
+    }
+    .ai-chat-msg.ai {
+      color: #22c55e;
+      margin-left: 12px;
+      background: #f1f5f9;
+      display: inline-block;
+    }
+    .ai-chat-input-row {
+      display: flex;
+      border-top: 1px solid #eee;
+      padding: 8px 12px;
+      background: inherit;
+    }
+    .ai-chat-input {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: 18px;
+      border: 1.5px solid #dbeafe;
+      font-size: 16px;
+      outline: none;
+      margin-right: 8px;
+      background: #fff;
+      color: #222;
+      transition: border 0.2s;
+    }
+    .dark .ai-chat-input {
+      background: #181818;
+      color: #eee;
+      border: 1.5px solid #444;
+    }
+    .ai-chat-send {
+      padding: 9px 20px;
+      border-radius: 18px;
+      border: none;
+      background: #2563eb;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-weight: 500;
+    }
+    .ai-chat-send:hover {
+      background: #1d4ed8;
+    }
+    .news-weather-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 28px;
+      margin: 28px auto 0 auto;
+      max-width: 1100px;
+    }
+    .news-box, .weather-box {
+      background: #fff;
+      border-radius: var(--card-radius);
+      box-shadow: var(--card-shadow);
+      padding: 18px 22px 20px 22px;
+      min-width: 300px;
+      max-width: 500px;
+      flex: 1 1 320px;
+      border: 1.5px solid #dbeafe;
+      text-align: left;
+    }
+    .dark .news-box, .dark .weather-box {
+      background: #232323;
+      color: #eee;
+      border: 1.5px solid #333;
+    }
+    .news-title, .weather-title {
+      font-weight: bold;
+      font-size: 20px;
+      margin-bottom: 10px;
+      color: #2563eb;
+      letter-spacing: 1px;
+    }
+    .news-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 16px;
+    }
+    .news-list li {
+      margin-bottom: 10px;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 7px;
+    }
+    .news-list li:last-child {
+      border-bottom: none;
+    }
+    .news-list a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .news-list a:hover {
+      text-decoration: underline;
+      color: #1d4ed8;
+    }
+    .weather-info {
+      font-size: 17px;
+      min-height: 32px;
+    }
+    @media (max-width: 1200px) {
+      .news-weather-wrap { max-width: 98vw; }
+      .news-box, .weather-box { min-width: 220px; }
+    }
+    @media (max-width: 900px) {
+      .news-weather-wrap { flex-direction: column; align-items: stretch; }
+      .news-box, .weather-box { max-width: 100%; }
+      .ai-chat {
+        position: static;
+        margin: 24px auto 0 auto;
+        max-width: 500px;
+        min-width: 0;
+      }
+    }
+    @media (max-width: 600px) {
+      .logo { font-size: 32px; margin-top: 30px; }
+      .search-input { font-size: 15px; padding: 8px 10px; }
+      .search-btn, .lucky-btn { font-size: 13px; padding: 7px 10px; }
+      .footer { font-size: 11px; }
+      .message { font-size: 14px; }
+      .news-box, .weather-box { padding: 10px 8px 12px 8px; }
+      .ai-answer { font-size: 14px; padding: 8px 10px; }
+    }
+  </style>
+</head>
+<body>
+  <button class="toggle-dark" id="toggleDark" title="Chuyển chế độ sáng/tối">🌙</button>
+  <div class="logo">
+    <span>T</span><span>r</span><span>ì</span><span>n</span><span>h</span> <span>D</span><span>u</span><span>y</span><span>ệ</span><span>t</span> <span>V</span><span>u</span><span>i</span> <span>V</span><span>u</span><span>i</span>
+  </div>
+  <div class="message" id="dailyMsg"></div>
+  <form class="search-box" onsubmit="return goSearch(event)">
+    <input type="text" id="q" class="search-input" autocomplete="off" placeholder="Bạn muốn tìm gì nào?" oninput="showSuggest()" onfocus="showHistory()" onblur="hideSuggestHistory()">
+    <button class="search-btn" type="submit">Tìm kiếm Vui Vui</button>
+    <button class="lucky-btn" type="button" onclick="lucky()">I'm Feeling Lucky Vui Vui</button>
+    <button class="search-btn" type="button" onclick="askAI()">Hỏi AI</button>
+  </form>
+  <div class="options">
+    <label><input type="checkbox" class="option-checkbox" id="safeSearch"> Safe Search</label>
+    <label><input type="checkbox" class="option-checkbox" id="studyMode"> Chế độ học tập</label>
+    <label>
+      <select id="themeSelect">
+        <option value="">Chủ đề mặc định</option>
+        <option value="blue">Xanh dương</option>
+        <option value="green">Xanh lá</option>
+        <option value="pink">Hồng</option>
+        <option value="dark">Tối</option>
+      </select>
+    </label>
+  </div>
+  <div class="ai-answer" id="aiAnswer"></div>
+  <div class="news-weather-wrap">
+    <div class="news-box">
+      <div class="news-title">📰 Tin tức mới nhất</div>
+      <ul id="newsList" class="news-list"></ul>
+    </div>
+    <div class="weather-box">
+      <div class="weather-title">🌤️ Thời tiết hiện tại</div>
+      <div id="weatherInfo" class="weather-info">Đang tải...</div>
+    </div>
+  </div>
+  <div class="ai-chat" id="aiChatBox">
+    <div id="aiChatHistory" class="ai-chat-history"></div>
+    <div class="ai-chat-input-row">
+      <input type="text" id="aiChatInput" class="ai-chat-input" placeholder="Nhập tin nhắn để trò chuyện với AI..." autocomplete="off" onkeydown="if(event.key==='Enter'){sendAIChat();}">
+      <button type="button" class="ai-chat-send" onclick="sendAIChat()">Gửi</button>
+    </div>
+  </div>
+  <div class="footer">
+    © 2024 Trình Duyệt Vui Vui. Phiên bản vui nhộn, không phải Google!
+  </div>
+  <audio id="laughSound" src="https://www.soundjay.com/human/laugh-1.mp3"></audio>
+  <script>
+    // --- Dark mode ---
+    const darkBtn = document.getElementById('toggleDark');
+    function setDarkMode(on) {
+      document.body.classList.toggle('dark', on);
+      localStorage.setItem('darkMode', on ? '1' : '0');
+      darkBtn.innerText = on ? '☀️' : '🌙';
+    }
+    darkBtn.onclick = () => setDarkMode(!document.body.classList.contains('dark'));
+    if (localStorage.getItem('darkMode') === '1') setDarkMode(true);
+
+    // --- Theme ---
+    const themeSelect = document.getElementById('themeSelect');
+    function setTheme(val) {
+      document.body.style.setProperty('--logo1', val === 'blue' ? '#4285f4' : val === 'green' ? '#34a853' : val === 'pink' ? '#e91e63' : '#4285f4');
+      document.body.style.setProperty('--logo2', val === 'blue' ? '#ea4335' : val === 'green' ? '#388e3c' : val === 'pink' ? '#f06292' : '#ea4335');
+      document.body.style.setProperty('--logo3', val === 'blue' ? '#fbbc05' : val === 'green' ? '#cddc39' : val === 'pink' ? '#ffb300' : '#fbbc05');
+      document.body.style.setProperty('--logo4', val === 'blue' ? '#34a853' : val === 'green' ? '#8bc34a' : val === 'pink' ? '#f8bbd0' : '#34a853');
+      if(val==='dark') setDarkMode(true);
+      else if(localStorage.getItem('darkMode')==='1') setDarkMode(true);
+      else setDarkMode(false);
+      localStorage.setItem('theme', val);
+    }
+    themeSelect.onchange = () => setTheme(themeSelect.value);
+    if(localStorage.getItem('theme')) {
+      themeSelect.value = localStorage.getItem('theme');
+      setTheme(themeSelect.value);
+    }
+
+    // --- Daily message ---
+    const messages = [
+      "Hôm nay bạn đã cười chưa? 😁",
+      "Mỗi ngày là một cơ hội mới!",
+      "Tìm kiếm tri thức, tìm kiếm niềm vui!",
+      "Bạn tuyệt vời hơn bạn nghĩ!",
+      "Đừng quên uống nước nhé 💧",
+      "Meme vui: ( ͡° ͜ʖ ͡°)",
+      "Hãy thử tìm kiếm điều gì đó mới mẻ!",
+      "Cười lên nào, mọi chuyện sẽ ổn thôi!",
+      "Chúc bạn một ngày vui vẻ!",
+      "Học tập chăm chỉ, chơi cũng hết mình!"
+    ];
+    function getDailyMsg() {
+      const idx = new Date().getDate() % messages.length;
+      return messages[idx];
+    }
+    document.getElementById('dailyMsg').innerText = getDailyMsg();
+
+    // --- Gợi ý từ khóa (Google Suggest API hoặc mẫu) ---
+    const suggestList = [
+      "30/4 lịch sử", "Học lập trình", "Meme vui", "Tin tức hôm nay", "Cách làm bánh", "Chơi game online", "Học tiếng Anh", "Lịch sử Việt Nam", "Công nghệ AI", "Chủ đề hot"
+    ];
+    async function showSuggest() {
+      const q = document.getElementById('q').value.trim();
+      const sugDiv = document.getElementById('suggestions');
+      sugDiv.innerHTML = "";
+      if (!q) { sugDiv.classList.remove('active'); return; }
+      // Google Suggest API (JSONP)
+      try {
+        window.googleSuggestCallback = function(data) {
+          sugDiv.innerHTML = "";
+          data[1].slice(0,7).forEach(item => {
+            sugDiv.innerHTML += `<div onclick="setSuggest('${item.replace(/'/g,"\\'")}')">${item}</div>`;
+          });
+          sugDiv.classList.add('active');
+        };
+        const script = document.createElement('script');
+        script.src = `https://suggestqueries.google.com/complete/search?client=firefox&q=${encodeURIComponent(q)}&callback=googleSuggestCallback`;
+        document.body.appendChild(script);
+        setTimeout(()=>{document.body.removeChild(script)}, 1000);
+      } catch {
+        // fallback
+        const filtered = suggestList.filter(s => s.toLowerCase().includes(q.toLowerCase()));
+        filtered.forEach(item => {
+          sugDiv.innerHTML += `<div onclick="setSuggest('${item.replace(/'/g,"\\'")}')">${item}</div>`;
+        });
+        sugDiv.classList.add('active');
+      }
+    }
+    function setSuggest(val) {
+      document.getElementById('q').value = val;
+      document.getElementById('suggestions').classList.remove('active');
+      document.getElementById('q').focus();
+    }
+
+    // --- Lịch sử tìm kiếm ---
+    function saveHistory(q) {
+      let h = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+      if (!h.includes(q)) {
+        h.unshift(q);
+        if (h.length > 10) h = h.slice(0,10);
+        localStorage.setItem('searchHistory', JSON.stringify(h));
+      }
+    }
+    function showHistory() {
+      const h = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+      const hDiv = document.getElementById('historyList');
+      hDiv.innerHTML = "";
+      if (h.length === 0) { hDiv.classList.remove('active'); return; }
+      h.forEach(item => {
+        hDiv.innerHTML += `<div onclick="setSuggest('${item.replace(/'/g,"\\'")}')">${item}</div>`;
+      });
+      hDiv.classList.add('active');
+    }
+    function hideSuggestHistory() {
+      setTimeout(()=>{
+        document.getElementById('suggestions').classList.remove('active');
+        document.getElementById('historyList').classList.remove('active');
+      }, 200);
+    }
+
+    // --- Safe Search ---
+    const safeSearch = document.getElementById('safeSearch');
+    safeSearch.checked = localStorage.getItem('safeSearch') === '1';
+    safeSearch.onchange = () => localStorage.setItem('safeSearch', safeSearch.checked ? '1' : '0');
+
+    // --- Study Mode ---
+    const studyMode = document.getElementById('studyMode');
+    studyMode.checked = localStorage.getItem('studyMode') === '1';
+    studyMode.onchange = () => localStorage.setItem('studyMode', studyMode.checked ? '1' : '0');
+
+    // --- AI trả lời nhanh (tự động huấn luyện bản thân) ---
+    // Lưu trữ các cặp hỏi-đáp do người dùng dạy AI vào localStorage
+    function getAIMemory() {
+      return JSON.parse(localStorage.getItem('aiMemory') || '{}');
+    }
+    function saveAIMemory(memory) {
+      localStorage.setItem('aiMemory', JSON.stringify(memory));
+    }
+
+    // Hàm dạy AI: Cú pháp "dạy ai: câu hỏi | câu trả lời"
+    function trainAI(input) {
+      const match = input.match(/^dạy ai\s*:\s*(.+?)\s*\|\s*(.+)$/i);
+      if (match) {
+        // Chuẩn hóa câu hỏi khi lưu (bỏ dấu, lowercase, trim)
+        const question = match[1].trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        const answer = match[2].trim();
+        const memory = getAIMemory();
+        memory[question] = answer;
+        saveAIMemory(memory);
+        return `Đã dạy AI: Khi hỏi "${match[1].trim()}" sẽ trả lời "${answer}"`;
+      }
+      return null;
+    }
+
+    async function fetchWebAnswer(question) {
+      // Sử dụng Google Custom Search API hoặc Wikipedia API (demo: Wikipedia)
+      // Lấy tóm tắt từ Wikipedia tiếng Việt
+      try {
+        const q = encodeURIComponent(question);
+        const url = `https://vi.wikipedia.org/api/rest_v1/page/summary/${q}`;
+        const res = await fetch(url);
+        if (!res.ok) return null;
+        const data = await res.json();
+        if (data.extract) return data.extract;
+      } catch {}
+      return null;
+    }
+
+    async function aiChatReply(msg) {
+      // Dạy AI trong chat
+      const trainMsg = trainAI(msg);
+      if (trainMsg) return trainMsg;
+
+      // Kiểm tra bộ nhớ AI trước
+      const memory = getAIMemory();
+      const lower = msg.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      if (memory[lower]) return memory[lower];
+
+      let ans = "";
+      if (lower.match(/(thoi tiet|thời tiết|trời hôm nay|trời như thế nào|trời ra sao)/)) {
+        ans = document.getElementById('weatherInfo').innerText || "Bạn hãy cho phép truy cập vị trí để xem thời tiết nhé!";
+      }
+      else if (lower.match(/(tin tuc|tin tức|co gi moi|news|báo chí|báo mới)/)) {
+        const newsList = document.getElementById('newsList');
+        if (newsList && newsList.children.length > 0) {
+          ans = "Tin tức mới nhất:\n" + Array.from(newsList.children).slice(0,3).map(li => li.innerText).join("\n");
+        } else {
+          ans = "Không thể lấy tin tức lúc này.";
+        }
+      }
+      else if (lower.match(/(hom nay la ngay may|ngay hom nay|date|today)/)) {
+        ans = "Hôm nay là " + new Date().toLocaleDateString('vi-VN');
+      }
+      else if (lower.match(/(may gio|mấy giờ|giờ hiện tại|giờ bây giờ|time|now)/)) {
+        ans = "Bây giờ là " + new Date().toLocaleTimeString('vi-VN');
+      }
+      else if (lower.match(/(ai la ai|ban la ai|ban ten gi|ban la gi|ai la gi|ai la tri tue nhan tao)/)) {
+        ans = "AI là trí tuệ nhân tạo, như tôi đây!";
+      }
+      else if (lower.match(/(xin chao|chao|hello|hi|hey)/)) {
+        ans = "Xin chào bạn! Tôi là trợ lý vui vui 🤖";
+      }
+      else if (lower.match(/(30\/4|ba muoi thang tu|ngay giai phong|ngay thong nhat)/)) {
+        ans = "Ngày 30/4 là ngày Giải phóng miền Nam, thống nhất đất nước Việt Nam.";
+      }
+      else if (lower.match(/(cam on|cảm ơn|thank you|thanks)/)) {
+        ans = "Không có gì, bạn luôn được chào đón!";
+      }
+      else if (lower.match(/(meme|vui|hài|funny)/)) {
+        ans = "¯\\_(ツ)_/¯";
+      }
+      else if (lower.match(/(hoc lap trinh|hoc code|lap trinh nhu the nao|hoc cntt|hoc it|hoc ai|hoc python|hoc js|hoc javascript)/)) {
+        ans = "Bạn có thể bắt đầu với Python, JavaScript hoặc C++ nhé! Có rất nhiều tài liệu miễn phí trên mạng.";
+      }
+      else if (lower.match(/(ai la nguoi dep trai nhat|ai dep trai nhat|ai dep trai|dep trai nhat)/)) {
+        ans = "Chắc chắn là bạn rồi 😎";
+      }
+      else if (lower.match(/(ban biet lam gi|ban co the giup gi|ban lam duoc gi|ban co gi dac biet)/)) {
+        ans = "Tôi có thể trả lời các câu hỏi đơn giản, cung cấp tin tức, thời tiết, giúp bạn học tập, giải thích khái niệm, tra cứu Wikipedia, và học thêm từ chính bạn!";
+      }
+      // Thêm các mẫu thông minh hơn
+      else if (lower.match(/(ai la tong thong my|tong thong my hien tai|president of usa)/)) {
+        ans = "Tổng thống Mỹ hiện tại là Joe Biden (2024).";
+      }
+      else if (lower.match(/(python la gi|python là gì)/)) {
+        ans = "Python là một ngôn ngữ lập trình bậc cao, dễ học, phổ biến cho AI, web, khoa học dữ liệu.";
+      }
+      else if (lower.match(/(ai la nguoi sang lap facebook|nguoi sang lap facebook|founder of facebook)/)) {
+        ans = "Mark Zuckerberg là người sáng lập Facebook.";
+      }
+      else if (lower.match(/(ai la nguoi giau nhat|nguoi giau nhat the gioi|richest person)/)) {
+        ans = "Tính đến 2024, Elon Musk và Bernard Arnault thường xuyên thay nhau là người giàu nhất thế giới.";
+      }
+      else if (lower.match(/(chatgpt la gi|chatgpt là gì)/)) {
+        ans = "ChatGPT là một chatbot AI do OpenAI phát triển, dựa trên mô hình ngôn ngữ lớn.";
+      }
+      else if (lower.match(/(ai la nguoi viet nam dau tien bay vao vu tru|nguoi viet nam dau tien bay vao vu tru)/)) {
+        ans = "Phạm Tuân là người Việt Nam đầu tiên bay vào vũ trụ (năm 1980).";
+      }
+      else if (lower.match(/(ai la nguoi lap trinh dau tien|nguoi lap trinh dau tien|first programmer)/)) {
+        ans = "Ada Lovelace được coi là lập trình viên đầu tiên trên thế giới.";
+      }
+      else if (lower.match(/(ai la nguoi phat minh dien|nguoi phat minh dien|who invented electricity)/)) {
+        ans = "Điện không do một người phát minh, nhưng Benjamin Franklin, Nikola Tesla, Thomas Edison đều có đóng góp lớn.";
+      }
+      else if (lower.match(/(ai la nguoi viet nam dau tien dat giai nobel|nguoi viet nam dat giai nobel)/)) {
+        ans = "Giáo sư Ngô Bảo Châu là người Việt Nam đầu tiên nhận Huy chương Fields (giải thưởng toán học danh giá, tương đương Nobel).";
+      }
+      else if (lower.match(/(ai la nguoi viet nam dau tien do olympic toan|nguoi viet nam do olympic toan)/)) {
+        ans = "Lê Bá Khánh Trình là người Việt Nam đầu tiên đạt huy chương vàng Olympic Toán quốc tế (1979).";
+      }
+      else if (lower.match(/(ai la nguoi viet nam dau tien vo dich olympic vat ly|nguoi viet nam vo dich olympic vat ly)/)) {
+        ans = "Nguyễn Trọng Đoàn là người Việt Nam đầu tiên đạt huy chương vàng Olympic Vật lý quốc tế (1984).";
+      }
+      else if (lower.match(/(ai la nguoi viet nam dau tien dat giai oscar|nguoi viet nam dat giai oscar)/)) {
+        ans = "Trần Anh Hùng là đạo diễn gốc Việt đầu tiên đoạt giải Oscar cho phim quốc tế (2024).";
+      }
+      else {
+        ans = null;
+      }
+
+      if (ans !== null && ans !== "") return ans;
+
+      // Nếu không có câu trả lời, tự động tìm trên web (Wikipedia)
+      // Sửa lỗi: phải trả về Promise và chờ kết quả fetch
+      const chatHistory = document.getElementById('aiChatHistory');
+      chatHistory.innerHTML += `<div class="ai-chat-msg ai">AI: Đang tìm câu trả lời trên web...</div>`;
+      return fetchWebAnswer(msg).then(webAns => {
+        if (webAns) {
+          const memory = getAIMemory();
+          memory[lower] = webAns;
+          saveAIMemory(memory);
+          chatHistory.lastChild.innerHTML = `AI: ${webAns}`;
+        } else {
+          chatHistory.lastChild.innerHTML = "AI: Xin lỗi, AI vui vui chưa biết trả lời câu này 😅";
+        }
+        return "";
+      });
+    }
+
+    function sendAIChat() {
+      const input = document.getElementById('aiChatInput');
+      const history = document.getElementById('aiChatHistory');
+      const msg = input.value.trim();
+      if (!msg) return;
+      // Hiển thị tin nhắn người dùng
+      history.innerHTML += `<div class="ai-chat-msg user">Bạn: ${msg}</div>`;
+      // Hiển thị trả lời AI (hỗ trợ async)
+      (async () => {
+        const reply = await aiChatReply(msg);
+        if (reply) {
+          history.innerHTML += `<div class="ai-chat-msg ai">AI: ${reply}</div>`;
+          history.scrollTop = history.scrollHeight;
+        }
+      })();
+      input.value = "";
+      history.scrollTop = history.scrollHeight;
+    }
+
+    // --- Hiệu ứng vui khi tìm kiếm ---
+    function fireworkEffect() {
+      for(let i=0;i<12;i++) {
+        const emoji = document.createElement('div');
+        emoji.innerText = ["🎉","✨","😂","🥳","😆","🎊","😺","😎","😻","💥","😃","😜"][Math.floor(Math.random()*12)];
+        emoji.style.position = 'fixed';
+        emoji.style.left = (Math.random()*90+5) + 'vw';
+        emoji.style.top = (Math.random()*60+10) + 'vh';
+        emoji.style.fontSize = (Math.random()*30+30)+'px';
+        emoji.style.opacity = 1;
+        emoji.style.transition = 'all 1.2s cubic-bezier(.4,2,.6,1)';
+        document.body.appendChild(emoji);
+        setTimeout(()=>{
+          emoji.style.top = (parseFloat(emoji.style.top)-Math.random()*30)+'vh';
+          emoji.style.opacity = 0;
+        }, 100);
+        setTimeout(()=>emoji.remove(), 1300);
+      }
+      document.getElementById('laughSound').play();
+    }
+
+    // --- Lucky button ---
+    const luckySites = [
+      "https://www.google.com/doodles",
+      "https://www.boredpanda.com/",
+      "https://www.reddit.com/r/funny/",
+      "https://www.wikihow.com/Be-Funny",
+      "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "https://www.theuselessweb.com/",
+      "https://www.lingscars.com/",
+      "https://pointerpointer.com/",
+      "https://www.omfgdogs.com/",
+      "https://www.windows93.net/"
+    ];
+    function lucky() {
+      fireworkEffect();
+      setTimeout(()=>{
+        window.location.href = luckySites[Math.floor(Math.random()*luckySites.length)];
+      }, 900);
+    }
+
+    // --- Tìm kiếm ---
+    function goSearch(e) {
+      if (e) e.preventDefault(); // Ngăn reload trang mặc định của form
+      const q = document.getElementById('q').value.trim();
+      if (!q) return false;
+      saveHistory(q);
+      // Sửa lỗi: kiểm tra aiAnswer có phải là function không
+      if (typeof aiAnswer === "function" && aiAnswer(q)) {
+        return false; // Nếu AI trả lời, không chuyển trang
+      }
+      let url = "https://www.google.com/search?q=" + encodeURIComponent(q);
+      // Safe Search
+      if (typeof safeSearch !== "undefined" && safeSearch.checked) url += "&safe=active";
+      // Study Mode
+      if (typeof studyMode !== "undefined" && studyMode.checked) {
+        url = "https://www.google.com/search?q=" + encodeURIComponent(q) + "+site:wikipedia.org+OR+site:vi.wiktionary.org+OR+site:dictionary.com+OR+site:youtube.com/kids";
+      }
+      window.location.href = url;
+    }
+
+    // --- Tin tức mới nhất ---
+    async function loadNews() {
+      try {
+        // Sử dụng rss2json miễn phí (giới hạn, demo)
+        const url = "https://api.rss2json.com/v1/api.json?rss_url=https://vnexpress.net/rss/tin-moi-nhat.rss";
+        const res = await fetch(url);
+        const data = await res.json();
+        const newsList = document.getElementById('newsList');
+        newsList.innerHTML = "";
+        if (data.items && data.items.length) {
+          data.items.slice(0, 6).forEach(item => {
+            newsList.innerHTML += `<li><a href="${item.link}" target="_blank">${item.title}</a></li>`;
+          });
+        } else {
+          newsList.innerHTML = "<li>Không thể tải tin tức.</li>";
+        }
+      } catch {
+        document.getElementById('newsList').innerHTML = "<li>Lỗi kết nối tin tức.</li>";
+      }
+    }
+    loadNews();
+
+    // --- Thời tiết hiện tại ---
+    function loadWeather() {
+      const weatherDiv = document.getElementById('weatherInfo');
+      if (!navigator.geolocation) {
+        weatherDiv.innerText = "Trình duyệt không hỗ trợ định vị.";
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(async pos => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        // Open-Meteo API, đơn vị °C
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=auto`;
+        try {
+          const res = await fetch(url);
+          const data = await res.json();
+          if (data.current_weather) {
+            const w = data.current_weather;
+            weatherDiv.innerHTML = `Nhiệt độ: <b>${w.temperature}°C</b><br>Trạng thái: <b>${weatherDesc(w.weathercode)}</b>`;
+          } else {
+            weatherDiv.innerText = "Không thể lấy dữ liệu thời tiết.";
+          }
+        } catch {
+          weatherDiv.innerText = "Lỗi kết nối thời tiết.";
+        }
+      }, () => {
+        weatherDiv.innerText = "Không lấy được vị trí.";
+      });
+    }
+    function weatherDesc(code) {
+      // Đơn giản hóa mô tả
+      if ([0].includes(code)) return "Trời quang";
+      if ([1,2,3].includes(code)) return "Có mây";
+      if ([45,48].includes(code)) return "Sương mù";
+      if ([51,53,55,56,57,61,63,65,66,67,80,81,82].includes(code)) return "Mưa";
+      if ([71,73,75,77,85,86].includes(code)) return "Tuyết";
+      if ([95,96,99].includes(code)) return "Dông";
+      return "Không xác định";
+    }
+    loadWeather();
+  </script>
+</body>
+</html>
